@@ -10,7 +10,7 @@
 package BussinessLogic;
 import java.util.List;
 import DataAccess.HormigaTipoDAO;
-import DataAccess.DTO.HormigaDTO;
+// import DataAccess.DTO.HormigaDTO;
 import DataAccess.DTO.HormigaTipoDTO;
 
 public class HormigaTipoBL {

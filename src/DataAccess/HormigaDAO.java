@@ -19,7 +19,10 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
         HormigaDTO oHormigaDTO = new HormigaDTO();
         String query =" SELECT IdHormiga  " 
                      +" ,IdHormigaTipo        " 
+                     +" ,Codigo        " 
                      +" ,Nombre               "
+                     +" ,Comio               "
+                     +" ,Recogio               "
                      +" ,Estado               "
                      +" ,FechaCrea            "
                      +" ,FechaModifica        "
@@ -32,29 +35,28 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
             while (rs.next()) {
                 oHormigaDTO = new HormigaDTO(rs.getInt(1)           // IdHormigaTipo
                                                       ,rs.getInt(2)        // Nombre             
-                                                      ,rs.getString(3)        // Estado         
+                                                      ,rs.getInt(3)        // Estado         
                                                       ,rs.getString(4)        // FechaCre      
-                                                      ,rs.getString(5)     // FechaModifica
-                                                      ,rs.getString(6));      // FechaModifica
+                                                      ,rs.getBoolean(5)     // FechaModifica
+                                                      ,rs.getBoolean(6)      // FechaModifica
+                                                      ,rs.getString(7)      // FechaModifica
+                                                      ,rs.getString(8)      // FechaModifica
+                                                      ,rs.getString(9));      // FechaModifica
             }
         } 
         catch (SQLException e) {
             throw new PAException(e.getMessage(), getClass().getName(), "readBy()");
         }
         return oHormigaDTO;
+        // throw  new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public List<HormigaDTO> readAll() throws Exception {
         List <HormigaDTO> lst = new ArrayList<>();
-        String query =" SELECT IdHormiga  " 
-                     +" ,IdHormigaTipo        " 
-                     +" ,Nombre               " 
-                     +" ,Estado               "
-                     +" ,FechaCrea            "
-                     +" ,FechaModifica        "
-                     +" FROM    Hormiga       "
-                     +" WHERE   Estado ='A' ";
+        String query = "SELECT IdHormiga, IdHormigaTipo, Codigo, Nombre, Comio, Recogio, Estado, FechaCrea, FechaModifica "
+                    + "FROM Hormiga "
+                    + "WHERE Estado = 'A'";
 
         try {
             Connection conn = getDBConnection();          // conectar a DB     
@@ -62,11 +64,12 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
             ResultSet rs   = stmt.executeQuery(query);    // ejecutar la
             while (rs.next()) {
                 HormigaDTO HormigaDTO = new HormigaDTO( rs.getInt(1)     // IdHormigaTipo
-                                                                      ,rs.getInt(2)  // Nombre             
-                                                                      ,rs.getString(3)  // Nombre             
-                                                                      ,rs.getString(4)  // Estado         
-                                                                      ,rs.getString(5)  // FechaCrea      
-                                                                      ,rs.getString(6));// FechaModifica
+                                                       ,rs.getInt(2)  // Nombre             
+                                                       ,rs.getInt(3)  // Nombre             
+                                                       ,rs.getString(4)  // Nombre             
+                                                       ,rs.getBoolean(5)  // Estado         
+                                                       ,rs.getBoolean(6)  // FechaCrea      
+                                                       ,rs.getString(7), query, query);// FechaModifica
                 lst.add(HormigaDTO);
             }
         } 
@@ -96,14 +99,15 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
     public boolean update(HormigaDTO entity) throws Exception {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
         LocalDateTime now = LocalDateTime.now();
-        String query = " UPDATE Hormiga SET IdHormigaTipo = ?, Nombre = ?, FechaModifica = ? WHERE IdHormiga = ?";
+        String query = " UPDATE Hormiga SET IdHormigaTipo = ?, Comio = ? , Recogio = ?, FechaModifica = ? WHERE IdHormiga = ?";
         try {
             Connection          conn = getDBConnection();
             PreparedStatement pstmt  = conn.prepareStatement(query);
             pstmt.setInt(1, entity.getIdHormigaTipo());
-            pstmt.setString(1, entity.getNombre());
-            pstmt.setString(2, dtf.format(now).toString());
-            pstmt.setInt(3, entity.getIdHormiga());
+            pstmt.setBoolean(2, entity.getComio());
+            pstmt.setBoolean(3, entity.getRecogio());
+            pstmt.setString(4, dtf.format(now).toString());
+            pstmt.setInt(5, entity.getIdHormiga());
             pstmt.executeUpdate();
             return true;
         } 
@@ -126,6 +130,7 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
         catch (SQLException e) {
             throw new PAException(e.getMessage(), getClass().getName(), "delete()");
         }
+        // throw  new UnsupportedOperationException("Not supported yet.");
     }
 
     public Integer getMaxRow()  throws Exception  {
