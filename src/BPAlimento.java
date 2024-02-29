@@ -12,6 +12,8 @@ public abstract class BPAlimento {
         this.bpCalorias  = bpCalorias;
     }
 
+    public abstract String toString();
+
     public String getBpNombre() {
         return bpNombre;
     }
