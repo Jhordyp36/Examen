@@ -10,7 +10,7 @@ public class BPAlimentoBL {
     private BPAlimentoDAO alimentoDAO;
 
     public  BPAlimentoBL() {
-        alimentoDAO = new BPAlimentoDAO();
+        this.alimentoDAO = new BPAlimentoDAO();
     }
 
     public List<BPAlimentoDTO> readAll() throws Exception{

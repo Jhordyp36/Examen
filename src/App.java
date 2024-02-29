@@ -1,21 +1,17 @@
-import java.beans.Statement;
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Scanner;
 
 import BussinessLogic.BPAlimentoBL;
 import BussinessLogic.HormigaBL;
 import BussinessLogic.HormigaTipoBL;
-import DataAccess.BPAlimentoDAO;
-import DataAccess.HormigaDAO;
 import DataAccess.DTO.BPAlimentoDTO;
 import DataAccess.DTO.HormigaDTO;
 import DataAccess.DTO.HormigaTipoDTO;
@@ -24,63 +20,131 @@ import UserInterface.Form.MainForm;
 public class App {
     public static void main(String[] args) throws Exception {
 
-        try {
-            // Establecer conexión a la base de datos
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:/ruta/a/tu/base/de/datos.sqlite");
+        List<HormigaDTO> hormigas = new ArrayList<>();
+        List<BPAlimentoDTO> alimento = new ArrayList<>();
+        HormigaBL h = new HormigaBL();
+        BPAlimentoBL a = new BPAlimentoBL();
+        Scanner Scanner = new Scanner(System.in);
 
-            // Simulando una Reina
-            int idReina = 2; // Supongamos que el IdHormiga de la Reina es 1
+        // ----------------- LEER ARCHIVO DE SET ALIMENTO ----------------------------
+        // HormigaTipoBL htBL = new HormigaTipoBL();
+        // for (HormigaTipoDTO s : htBL.readAll()) {
+        //     System.out.println(s.toString());
+        // }
+        // MainForm frmMain = new MainForm("IABsot");
+        // String filePath = "C:/Users/clien/Desktop/Examen2/Examen_AntBot/setAlimento.txt";
 
-            // Simulando 40 Larvas
-            for (int i = 1; i <= 40; i++) {
-                // Supongamos que el IdHormiga de la Larva es i
-                int idLarva = i;
+        // try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        //     Class.forName("org.sqlite.JDBC");
+        //     Connection connection = DriverManager.getConnection("jdbc:sqlite:database//PADatabaseAntBot.sqlite");
 
-                // Simular que la Reina da de comer a la Larva (por ejemplo, Carnivoro)
-                bpComer(conn, idReina, idLarva, "Carnivoro");
+        //     String query = "INSERT INTO BPAlimento (NombreAlimento) VALUES (?)";
+        //     try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+        //         String line;
+        //         while ((line = br.readLine()) != null) {
+        //             // Suponiendo que los datos en el archivo están separados por comas
+        //             String[] datos = line.split(",");
+        //             String nombre = datos[0].trim();
 
-                // Simular que la Larva busca alimento (por ejemplo, Carnivoro)
-                bpBuscar(conn, idLarva, "Carnivoro");
+        //             pstmt.setString(1, nombre);
+        //             pstmt.executeUpdate();
+        //         }
+        //         System.out.println("Datos insertados con éxito.");
+        //     }
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+        for (BPAlimentoDTO aDTO : a.readAll()) {
+            alimento.add(aDTO);
+        }
+        for (HormigaDTO hDTO : h.readAll()) {
+            hormigas.add(hDTO);
+        }
+        bpLimpiarConsola();
+        System.out.println("----------------Todas las Hormigas---------------------");
+        for (HormigaDTO hormiga : hormigas) {
+            System.out.println(hormiga.toString());
+        }
+        bpEsperarTecla(Scanner);
+        bpLimpiarConsola();
+        System.out.println("-------Hormiga Reina--------");
+        for (HormigaDTO hormiga : hormigas) {
+            if ("Reina".equals(hormiga.getNombre())) {
+                System.out.println("ID: " + hormiga.getIdHormiga() + ", Nombre: " + hormiga.getNombre());
             }
-
-            // Simulando un Soldado
-            int idSoldado = 41; // Supongamos que el IdHormiga del Soldado es 41
-
-            // Simular que el Soldado busca alimento (por ejemplo, Carnivoro)
-            bpBuscar(conn, idSoldado, "Carnivoro");
-
-            // Cerrar conexión a la base de datos
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        bpEsperarTecla(Scanner);
+        bpLimpiarConsola();
+        for (BPAlimentoDTO aDTO : alimento) {
+            if ("Carnivoro".equals(aDTO.getNombreAlimento())) {
+                aDTO.setEstado("X");
+                // Encuentra todas las larvas en las hormigas y actualiza su estado
+                for (HormigaDTO hormiga : hormigas) {
+                    if ("Larva".equals(hormiga.getNombre())) {
+                        // Cambiar el nombre de la larva a "Soldado"
+                        hormiga.setNombre("Soldado");
+                        // Cambiar el estado de Comio de A a X
+                        hormiga.setComio("A");
+                        // Puedes realizar otras acciones si es necesario
+                    }
+                }
+            }
+            else{
+                for (HormigaDTO hormiga : hormigas) {
+                    if ("Larva".equals(hormiga.getNombre())) {
+                        // Cambiar el nombre de la larva a "Soldado"
+                        hormiga.setEstado("X");
+                        // Cambiar el estado de Comio de A a X
+                        hormiga.setComio("A");
+                        // Puedes realizar otras acciones si es necesario
+                    }
+                }
+            }
+        }
+
+        System.out.println("------------ Hormigas que comieron -----------------");
+        for (HormigaDTO hormiga : hormigas) {
+            if (!hormiga.getEstado().equals("X") || !hormiga.getComio() .equals("X")) {
+                System.out.println(hormiga.toString());
+            }
+        }
+        bpEsperarTecla(Scanner);
+        bpLimpiarConsola();
+        System.out.println("----------Alimento Sobrante-----------------");
+        for (BPAlimentoDTO bpAlimentoDTO : alimento) {
+            if(!bpAlimentoDTO.getEstado().equalsIgnoreCase("X")){
+                System.out.println(bpAlimentoDTO);
+            }
+        }
+        bpEsperarTecla(Scanner);
+        bpLimpiarConsola();
+
+
+        
+
+        // for
+
+
+        
+        // for (BPAlimentoDTO aL : alimento) {
+        //     System.out.println(aL.toString());
+        // }
+        //     for (HormigaDTO hormiga : hormigas) {
+    //         if ("Larva".equals(hormiga.getNombre())) {
+    //             hormiga.setComio("X");
+    //             hormiga.setNombre("Soldado");
+    //         }
+    //     }
+    //     for (HormigaDTO hormiga : hormigas) {
+    //         System.out.println(hormiga);
+    //     }
+    
     }
-
-    // Método para simular la acción de comer en la base de datos
-    private static void bpComer(Connection conn, int idHormigaComedora, int idHormigaComida, String tipoAlimento) throws SQLException {
-        // Supongamos que BPAlimento tiene una columna Estado y queremos cambiar el estado a 'X'
-        String sql = "UPDATE BPAlimento SET Estado = 'X' WHERE IdHormiga = ? AND TipoAlimento = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, idHormigaComida);
-            pstmt.setString(2, tipoAlimento);
-            pstmt.executeUpdate();
-        }
+    private static void bpEsperarTecla(Scanner sc) {
+        System.out.print("\nPresione cualquier tecla para continuar...");
+        sc.nextLine();
     }
-
-    // Método para simular la acción de buscar en la base de datos
-    private static void bpBuscar(Connection conn, int idHormiga, String tipoAlimento) throws SQLException {
-        // Supongamos que queremos eliminar los registros de BPAlimento donde el Estado es 'X'
-        String sql = "DELETE FROM BPAlimento WHERE IdHormiga = ? AND TipoAlimento = 'X'";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, idHormiga);
-            pstmt.executeUpdate();
-        }
-
-        // Supongamos que queremos cambiar el estado en la tabla Hormiga (por ejemplo, cambiar Comio a 1)
-        sql = "UPDATE Hormiga SET Comio = 1 WHERE IdHormiga = ?";
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, idHormiga);
-            pstmt.executeUpdate();
-        }
-    }
+    private static void bpLimpiarConsola() throws Exception {
+        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+}
 }

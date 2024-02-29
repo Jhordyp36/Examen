@@ -23,12 +23,11 @@ public class BPAlimentoDAO extends SQLDataHelper implements IDAO<BPAlimentoDTO>{
     @Override
     public List<BPAlimentoDTO> readAll() throws Exception {
         List <BPAlimentoDTO> lst = new ArrayList<>();
-        String query =    " SELECT BPAlimento  "
-                        + " IdBPAlimento  "
+        String query =    " SELECT IdBPAlimento  "
                         + ",NombreAlimento"
                         + ",IdHormigaTipo "
                         + ",Codigo        "
-                        + ",Nombre        "
+                        + ",IdHormiga     "
                         + ",Estado        "
                         + ",FechaCrea     "
                         + ",FechaModifica "
@@ -43,7 +42,7 @@ public class BPAlimentoDAO extends SQLDataHelper implements IDAO<BPAlimentoDTO>{
                                                     ,rs.getString(2)
                                                     ,rs.getInt(3)
                                                     ,rs.getInt(4)
-                                                    ,rs.getString(5)
+                                                    ,rs.getInt(5)
                                                     ,rs.getString(6)
                                                     ,rs.getString(7)
                                                     ,rs.getString(8));
@@ -79,13 +78,13 @@ public class BPAlimentoDAO extends SQLDataHelper implements IDAO<BPAlimentoDTO>{
     public boolean update(BPAlimentoDTO entity) throws Exception {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
         LocalDateTime now = LocalDateTime.now();
-        String query = "UPDATE BPAlimento SET IdHormigaTipo = ?, Codigo = ?, Nombre = ?,Estado = ?, FechaModifica = ? WHERE IdBPAlimento = ? ";
+        String query = "UPDATE BPAlimento SET IdHormigaTipo = ?, Codigo = ?, IdHormiga = ?,Estado = ?, FechaModifica = ? WHERE IdBPAlimento = ? ";
         try {
             Connection conn = getDBConnection();         //
             PreparedStatement pstmt = conn.prepareStatement(query);     //preparar
             pstmt.setInt(1, entity.getIdHormigaTipo());
             pstmt.setInt(2, entity.getCodigo());
-            pstmt.setString(3,entity.getNombre());          //sete
+            pstmt.setInt(3,entity.getIdHormiga());          //sete
             pstmt.setString(4,entity.getEstado());          //sete
             pstmt.setString(5,dtf.format(now));          //setea
             pstmt.setInt(6,entity.getIdBPAlimento()); //where

@@ -8,10 +8,12 @@ public class HormigaBL {
     private HormigaDTO hormigaDTO;
     private HormigaDAO hormigaDAO;
 
-    public  HormigaBL() {}
+    public  HormigaBL() {
+        this.hormigaDAO = new HormigaDAO();
+    }
 
     public List<HormigaDTO> readAll() throws Exception{
-        return  hormigaDAO.readAll();
+        return hormigaDAO.readAll();
     }
 
     public HormigaDTO readBy(Integer idHormiga) throws Exception{

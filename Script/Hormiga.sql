@@ -7,8 +7,8 @@ CREATE TABLE IF NOT  EXISTS Hormiga (
     ,IdHormigaTipo      INTEGER NOT NULL REFERENCES HormigaTipo(IdHormigaTipo)
     ,Codigo             INTEGER UNIQUE NOT NULL
     ,Nombre             TEXT NOT NULL
-    ,Comio              BOOLEAN NOT NULL DEFAULT 0  -- 0 para no, 1 para sí
-    ,Recogio            BOOLEAN NOT NULL DEFAULT 0  -- 0 para no, 1 para sí
+    ,Comio              TEXT NOT NULL DEFAULT "X"  -- "A" para no, 1 para sí
+    ,Recogio            TEXT NOT NULL DEFAULT "X"  -- "A" para no, 1 para sí
     ,Estado             Varchar(1) NOT NULL DEFAULT "A"
     ,FechaCrea          DATETIME NOT NULL DEFAULT (DATETIME('NOW', 'LOCALTIME'))
     ,FechaModifica      DATE
@@ -16,12 +16,11 @@ CREATE TABLE IF NOT  EXISTS Hormiga (
 ); 
 
 INSERT INTO Hormiga (IdHormigaTipo, Codigo, Nombre) VALUES
-   (1,'1254','Hormiga'),
    (5,'4325','Reina');
 
 -- Crea las 40 Larvas
 
-Bucle para generar instrucciones INSERT
+--Bucle para generar instrucciones INSERT
 WITH RECURSIVE larvas AS (
   SELECT 1 AS i
   UNION ALL
@@ -30,5 +29,6 @@ WITH RECURSIVE larvas AS (
 INSERT INTO Hormiga (IdHormigaTipo, Codigo, Nombre)
 SELECT 4 AS IdHormigaTipo,
        ABS(RANDOM() % 10000) AS Codigo,
-       'Larva ' || i AS Nombre
+       'Larva' AS Nombre
 FROM larvas;
+

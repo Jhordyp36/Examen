@@ -37,8 +37,8 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
                                                       ,rs.getInt(2)        // Nombre             
                                                       ,rs.getInt(3)        // Estado         
                                                       ,rs.getString(4)        // FechaCre      
-                                                      ,rs.getBoolean(5)     // FechaModifica
-                                                      ,rs.getBoolean(6)      // FechaModifica
+                                                      ,rs.getString(5)     // FechaModifica
+                                                      ,rs.getString(6)      // FechaModifica
                                                       ,rs.getString(7)      // FechaModifica
                                                       ,rs.getString(8)      // FechaModifica
                                                       ,rs.getString(9));      // FechaModifica
@@ -54,22 +54,32 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
     @Override
     public List<HormigaDTO> readAll() throws Exception {
         List <HormigaDTO> lst = new ArrayList<>();
-        String query = "SELECT IdHormiga, IdHormigaTipo, Codigo, Nombre, Comio, Recogio, Estado, FechaCrea, FechaModifica "
-                    + "FROM Hormiga "
-                    + "WHERE Estado = 'A'";
+        String query = " SELECT IdHormiga  " 
+                         +" ,IdHormigaTipo        " 
+                         +" ,Codigo        " 
+                         +" ,Nombre               "
+                         +" ,Comio               "
+                         +" ,Recogio               "
+                         +" ,Estado               "
+                         +" ,FechaCrea            "
+                         +" ,FechaModifica        "
+                         +" FROM    Hormiga       "
+                         +" WHERE   Estado ='A'";
 
         try {
             Connection conn = getDBConnection();          // conectar a DB     
             Statement  stmt = conn.createStatement();     // CRUD : select * ...    
             ResultSet rs   = stmt.executeQuery(query);    // ejecutar la
             while (rs.next()) {
-                HormigaDTO HormigaDTO = new HormigaDTO( rs.getInt(1)     // IdHormigaTipo
-                                                       ,rs.getInt(2)  // Nombre             
-                                                       ,rs.getInt(3)  // Nombre             
+                HormigaDTO HormigaDTO = new HormigaDTO( rs.getInt(1)     // IdHormiga
+                                                       ,rs.getInt(2)  // IdHormigaTipo          
+                                                       ,rs.getInt(3)  // Codigo             
                                                        ,rs.getString(4)  // Nombre             
-                                                       ,rs.getBoolean(5)  // Estado         
-                                                       ,rs.getBoolean(6)  // FechaCrea      
-                                                       ,rs.getString(7), query, query);// FechaModifica
+                                                       ,rs.getString(5)  // Comio         
+                                                       ,rs.getString(6)  // Recogio      
+                                                       ,rs.getString(7) //Estado
+                                                       ,rs.getString(8)
+                                                       ,rs.getString(9));// FechaModifica
                 lst.add(HormigaDTO);
             }
         } 
@@ -104,8 +114,8 @@ public class HormigaDAO extends SQLDataHelper implements IDAO<HormigaDTO>{
             Connection          conn = getDBConnection();
             PreparedStatement pstmt  = conn.prepareStatement(query);
             pstmt.setInt(1, entity.getIdHormigaTipo());
-            pstmt.setBoolean(2, entity.getComio());
-            pstmt.setBoolean(3, entity.getRecogio());
+            pstmt.setString(2, entity.getComio());
+            pstmt.setString(3, entity.getRecogio());
             pstmt.setString(4, dtf.format(now).toString());
             pstmt.setInt(5, entity.getIdHormiga());
             pstmt.executeUpdate();
